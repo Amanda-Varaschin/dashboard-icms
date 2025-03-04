@@ -12,7 +12,7 @@ export default function Login() {
         if (document.cookie.includes('auth=true')) {
             router.push('/dashboard');
         }
-    }, []);
+    }, [router]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
