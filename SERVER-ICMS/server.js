@@ -11,7 +11,14 @@ const PORT = 3000;
 const CSV_FILE_TESOURO = 'dados_tesouro.csv';
 const CSV_FILE_SICONFI = 'dados_siconfi.csv';
 
-app.use(cors());
+app.use(
+    cors({
+        origin: ["https://dashboard-icms.vercel.app"], // Permitir apenas o frontend no Vercel
+        methods: ["GET"], // Permitir apenas requisições GET
+        allowedHeaders: ["Content-Type"], // Permitir cabeçalhos básicos
+    })
+);
+
 
 const API_TESOURO = 'http://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2023&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=41';
 const API_SICONFI = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo';
@@ -61,7 +68,7 @@ function filterData(data) {
 // Função principal que processa os dados, chama APIs e salva os CSVs
 async function processData() {
     console.log('Buscando dados do Tesouro e SICONFI...');
-    
+
     const [dataTesouro, dataSiconfi] = await Promise.all([
         fetchData(API_TESOURO),
         fetchData(API_SICONFI, {
@@ -71,16 +78,16 @@ async function processData() {
             id_ente: 41
         })
     ]);
-    
+
     console.log("🔍 Dados brutos do Tesouro:", dataTesouro.length);
     console.log("🔍 Dados brutos do SICONFI:", dataSiconfi.length);
-    
+
     const filteredTesouro = filterData(dataTesouro);
     const filteredSiconfi = filterData(dataSiconfi);
-    
+
     console.log("📌 Dados filtrados do Tesouro:", filteredTesouro.length);
     console.log("📌 Dados filtrados do SICONFI:", filteredSiconfi.length);
-    
+
     saveToCSV(filteredTesouro, CSV_FILE_TESOURO);
     saveToCSV(filteredSiconfi, CSV_FILE_SICONFI);
 }
