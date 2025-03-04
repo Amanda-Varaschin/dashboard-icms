@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 
@@ -9,8 +10,16 @@ export default function Dashboard() {
   const [dadosTesouro, setDadosTesouro] = useState([]);
   const [dadosSiconfi, setDadosSiconfi] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
+    // Verifica a autenticação antes de carregar os dados
+    const auth = document.cookie.includes('auth=true');
+    if (!auth) {
+      router.push('/login');
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const [resTesouro, resSiconfi] = await Promise.all([
@@ -28,6 +37,7 @@ export default function Dashboard() {
         setCarregando(false);
       }
     };
+
     fetchData();
   }, []);
 
@@ -83,7 +93,7 @@ export default function Dashboard() {
   return (
     <div>
       <h1>Dashboard ICMS</h1>
-      {carregando ? <p>Carregando dados...</p> : <Bar data={data} />} 
+      {carregando ? <p>Carregando dados...</p> : <Bar data={data} />}
     </div>
   );
 }

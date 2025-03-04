@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Login() {
@@ -7,10 +7,16 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const router = useRouter();
 
+    useEffect(() => {
+        // Se o usuário já está autenticado, vai direto para o dashboard
+        if (document.cookie.includes('auth=true')) {
+            router.push('/dashboard');
+        }
+    }, []);
+
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        // Simulação de autenticação (substituir por chamada real à API)
         if (username === 'admin' && password === '1234') {
             document.cookie = `auth=true; path=/; max-age=3600; Secure; SameSite=Strict`;
             router.push('/dashboard');
