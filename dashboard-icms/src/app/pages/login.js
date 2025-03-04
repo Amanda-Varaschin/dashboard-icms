@@ -10,11 +10,8 @@ export default function Login() {
   const [error, setError] = useState('');
 
   const handleLogin = () => {
-    const validUsername = 'admin';
-    const validPassword = 'ICMS2023';
-
-    if (username === validUsername && password === validPassword) {
-      localStorage.setItem('auth', 'true'); // Salva autenticação
+    if (username === 'admin' && password === 'ICMS2023') {
+      localStorage.setItem('auth', 'true');
       router.push('/dashboard');
     } else {
       setError('Credenciais inválidas!');
@@ -26,26 +23,9 @@ export default function Login() {
       <div className="bg-white p-6 rounded-lg shadow-lg w-80">
         <h2 className="text-xl font-bold mb-4">Login</h2>
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-        <input
-          type="text"
-          placeholder="Usuário"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="w-full p-2 border rounded mb-2"
-        />
-        <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 border rounded mb-2"
-        />
-        <button
-          onClick={handleLogin}
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-        >
-          Entrar
-        </button>
+        <input type="text" placeholder="Usuário" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-2 border rounded mb-2" />
+        <input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-2 border rounded mb-2" />
+        <button onClick={handleLogin} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Entrar</button>
       </div>
     </div>
   );
