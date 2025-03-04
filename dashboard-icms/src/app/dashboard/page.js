@@ -29,7 +29,7 @@ export default function Dashboard() {
       }
     };
     fetchData();
-  }, [processarDados]);
+  }, []);
 
   const convertColunaToMes = (coluna) => ({
     'MR-11': 'Dezembro',
