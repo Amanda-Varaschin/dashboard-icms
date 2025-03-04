@@ -13,7 +13,7 @@ const CSV_FILE_SICONFI = 'dados_siconfi.csv';
 
 app.use(
     cors({
-      origin: ["https://dashboard-icms-6400z9qne-amanda-varaschins-projects.vercel.app"],
+      origin: ["*"],
       methods: ["GET"],
       allowedHeaders: ["Content-Type"],
     })
