@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://dashboard-icms.onrender.com";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://dashboard-icms.onrender.com";
 
 export default function Dashboard() {
   const [dadosTesouro, setDadosTesouro] = useState([]);
@@ -14,12 +14,8 @@ export default function Dashboard() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const resTesouro = await fetch("https://dashboard-icms.onrender.com/dados-json-tesouro", {
-          mode: "cors",
-        });
-        const resSiconfi = await fetch("https://dashboard-icms.onrender.com/dados-json-siconfi", {
-          mode: "cors",
-        });        
+        const resTesouro = await fetch(`${API_BASE_URL}/dados-json-tesouro`, { mode: "cors" });
+        const resSiconfi = await fetch(`${API_BASE_URL}/dados-json-siconfi`, { mode: "cors" });
 
         if (!resTesouro.ok || !resSiconfi.ok) {
           throw new Error("Erro ao buscar dados");
