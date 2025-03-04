@@ -15,7 +15,9 @@ export default function Dashboard() {
     async function fetchData() {
       try {
         // Busco os dados de duas fontes diferentes
-        const resTesouro = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/dados-json-tesouro`);
+        const res = await fetch("https://server-icms.onrender.com/dados-json-tesouro", {
+          mode: "cors",
+        });
         const resSiconfi = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/dados-json-siconfi`);
         
 
