@@ -14,10 +14,12 @@ export default function Dashboard() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [resTesouro, resSiconfi] = await Promise.all([
-          fetch(`${API_BASE_URL}/dados-json-tesouro`),
-          fetch(`${API_BASE_URL}/dados-json-siconfi`),
-        ]);
+        const resTesouro = await fetch("https://dashboard-icms.onrender.com/dados-json-tesouro", {
+          mode: "cors",
+        });
+        const resSiconfi = await fetch("https://dashboard-icms.onrender.com/dados-json-siconfi", {
+          mode: "cors",
+        });        
 
         if (!resTesouro.ok || !resSiconfi.ok) {
           throw new Error("Erro ao buscar dados");
