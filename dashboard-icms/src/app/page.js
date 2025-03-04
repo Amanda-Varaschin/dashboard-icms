@@ -15,8 +15,9 @@ export default function Dashboard() {
     async function fetchData() {
       try {
         // Busco os dados de duas fontes diferentes
-        const resTesouro = await fetch("https://dashboard-icms.onrender.com/dados-json-tesouro");
-        const resSiconfi = await fetch("https://dashboard-icms.onrender.com/dados-json-siconfi");
+        const resTesouro = await fetch("http://localhost:3000/dados-json-tesouro");
+        const resSiconfi = await fetch("http://localhost:3000/dados-json-siconfi");
+
 
         // Converto a resposta para JSON
         const tesouro = await resTesouro.json();
