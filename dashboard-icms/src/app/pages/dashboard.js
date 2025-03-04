@@ -1,52 +1,48 @@
 'use client';
+import { useEffect, useState } from 'react';
+import { Bar } from 'react-chartjs-2';
+import 'chart.js/auto';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Bar } from "react-chartjs-2";
-import "chart.js/auto";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://dashboard-icms.onrender.com";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://dashboard-icms.onrender.com';
 
 export default function Dashboard() {
-  const router = useRouter();
   const [dadosTesouro, setDadosTesouro] = useState([]);
   const [dadosSiconfi, setDadosSiconfi] = useState([]);
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    if (!localStorage.getItem("auth")) {
-      router.push("/login");
-      return;
-    }
-
     const fetchData = async () => {
       try {
         const [resTesouro, resSiconfi] = await Promise.all([
           fetch(`${API_BASE_URL}/dados-json-tesouro`),
           fetch(`${API_BASE_URL}/dados-json-siconfi`),
         ]);
-
-        if (!resTesouro.ok || !resSiconfi.ok) throw new Error("Erro ao buscar dados");
-
+        if (!resTesouro.ok || !resSiconfi.ok) throw new Error('Erro ao buscar dados');
         const tesouro = await resTesouro.json();
         const siconfi = await resSiconfi.json();
-
         setDadosTesouro(processarDados(Array.isArray(tesouro) ? tesouro : []));
         setDadosSiconfi(processarDados(Array.isArray(siconfi) ? siconfi : []));
       } catch (error) {
-        console.error("Erro ao buscar os dados:", error);
+        console.error('Erro ao buscar os dados:', error);
       } finally {
         setCarregando(false);
       }
     };
-
     fetchData();
-  }, [router]);
+  }, []);
 
   const convertColunaToMes = (coluna) => ({
-    "MR-11": "Dezembro", "MR-10": "Novembro", "MR-09": "Outubro", "MR-08": "Setembro",
-    "MR-07": "Agosto", "MR-06": "Julho", "MR-05": "Junho", "MR-04": "Maio",
-    "MR-03": "Abril", "MR-02": "Março", "MR-01": "Fevereiro",
+    'MR-11': 'Dezembro',
+    'MR-10': 'Novembro',
+    'MR-09': 'Outubro',
+    'MR-08': 'Setembro',
+    'MR-07': 'Agosto',
+    'MR-06': 'Julho',
+    'MR-05': 'Junho',
+    'MR-04': 'Maio',
+    'MR-03': 'Abril',
+    'MR-02': 'Março',
+    'MR-01': 'Fevereiro',
   }[coluna] || coluna);
 
   const processarDados = (dados) => {
@@ -57,30 +53,37 @@ export default function Dashboard() {
     }, {});
   };
 
-  const mesesMR = ["MR-11", "MR-10", "MR-09", "MR-08", "MR-07", "MR-06", "MR-05", "MR-04", "MR-03", "MR-02", "MR-01"];
-  const meses = mesesMR.map(convertColunaToMes).filter(m => dadosTesouro[m] || dadosSiconfi[m]);
-  const valoresTesouro = meses.map(m => dadosTesouro[m] || 0);
-  const valoresSiconfi = meses.map(m => dadosSiconfi[m] || 0);
+  const mesesMR = ['MR-11', 'MR-10', 'MR-09', 'MR-08', 'MR-07', 'MR-06', 'MR-05', 'MR-04', 'MR-03', 'MR-02', 'MR-01'];
+  const meses = mesesMR.map(convertColunaToMes).filter((m) => dadosTesouro[m] || dadosSiconfi[m]);
+  const valoresTesouro = meses.map((m) => dadosTesouro[m] || 0);
+  const valoresSiconfi = meses.map((m) => dadosSiconfi[m] || 0);
   const valoresGastos = valoresTesouro.map((val, i) => Math.abs(val - valoresSiconfi[i]));
 
+  const data = {
+    labels: meses,
+    datasets: [
+      {
+        label: 'Tesouro',
+        data: valoresTesouro,
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+      },
+      {
+        label: 'Siconfi',
+        data: valoresSiconfi,
+        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+      },
+      {
+        label: 'Diferença',
+        data: valoresGastos,
+        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+      },
+    ],
+  };
+
   return (
-    <div className="container mx-auto p-4 text-center">
-      <h1 className="text-2xl font-bold mb-4">Comparação ICMS Tesouro x SICONFI</h1>
-      <h3 className="text-lg mb-4">Comparação por Mês</h3>
-      {carregando ? (
-        <p>Carregando...</p>
-      ) : (
-        <div className="w-full overflow-x-auto">
-          <Bar data={{ labels: meses, datasets: [
-            { label: "Tesouro Nacional", data: valoresTesouro, backgroundColor: "rgba(54, 162, 235, 0.6)" },
-            { label: "SICONFI", data: valoresSiconfi, backgroundColor: "rgba(255, 99, 132, 0.6)" },
-            { label: "Valor Gasto", data: valoresGastos, backgroundColor: "rgba(255, 206, 86, 0.6)" },
-          ]}} />
-        </div>
-      )}
-      <button onClick={() => { localStorage.removeItem("auth"); router.push("/login"); }} className="mt-4 bg-red-500 text-white p-2 rounded">
-        Sair
-      </button>
+    <div>
+      <h1>Dashboard ICMS</h1>
+      {carregando ? <p>Carregando dados...</p> : <Bar data={data} />} 
     </div>
   );
 }
