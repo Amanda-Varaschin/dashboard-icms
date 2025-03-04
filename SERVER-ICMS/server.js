@@ -13,20 +13,17 @@ const CSV_FILE_SICONFI = 'dados_siconfi.csv';
 
 app.use(
     cors({
-        origin: ["https://dashboard-icms.vercel.app"], // Permitir apenas o frontend no Vercel
-        methods: ["GET"], // Permitir apenas requisições GET
-        allowedHeaders: ["Content-Type"], // Permitir cabeçalhos básicos
+        origin: ["https://dashboard-icms.vercel.app"],
+        methods: ["GET"],
+        allowedHeaders: ["Content-Type"],
     })
 );
-
 
 const API_TESOURO = 'http://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2023&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=41';
 const API_SICONFI = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo';
 
-// Lista dos meses para converter os códigos MR-XX para nomes de meses
 const meses = ["Dezembro", "Novembro", "Outubro", "Setembro", "Agosto", "Julho", "Junho", "Maio", "Abril", "Março", "Fevereiro", "Janeiro"];
 
-// Converte colunas do formato "MR-XX" para o nome do mês correspondente
 function convertColunaToMes(coluna) {
     const match = coluna.match(/MR-(\d+)/);
     if (match) {
@@ -36,7 +33,6 @@ function convertColunaToMes(coluna) {
     return coluna;
 }
 
-// Função para buscar dados de uma API específica
 async function fetchData(apiUrl, params = {}) {
     try {
         const url = new URL(apiUrl);
@@ -52,20 +48,18 @@ async function fetchData(apiUrl, params = {}) {
     }
 }
 
-// Filtra os dados que interessam do dataset bruto
 function filterData(data) {
     return data.filter(row =>
-        row.anexo === 'RREO-Anexo 03' && // Filtramos apenas o anexo 03
-        row.conta === 'ICMS' && // Focamos apenas na conta de ICMS
-        row.coluna !== 'PREVISÃO ATUALIZADA 2023' && // Ignoramos previsões
-        row.coluna !== 'TOTAL (ÚLTIMOS 12 MESES)' // Ignoramos totais
+        row.anexo === 'RREO-Anexo 03' &&
+        row.conta === 'ICMS' &&
+        row.coluna !== 'PREVISÃO ATUALIZADA 2023' &&
+        row.coluna !== 'TOTAL (ÚLTIMOS 12 MESES)'
     ).map(row => ({
         ...row,
-        coluna: convertColunaToMes(row.coluna) // Convertendo colunas para meses
+        coluna: convertColunaToMes(row.coluna)
     }));
 }
 
-// Função principal que processa os dados, chama APIs e salva os CSVs
 async function processData() {
     console.log('Buscando dados do Tesouro e SICONFI...');
 
@@ -92,7 +86,6 @@ async function processData() {
     saveToCSV(filteredSiconfi, CSV_FILE_SICONFI);
 }
 
-// Salva os dados em um arquivo CSV
 function saveToCSV(data, filename) {
     if (data.length > 0) {
         const parser = new Parser();
@@ -103,7 +96,6 @@ function saveToCSV(data, filename) {
     }
 }
 
-// Converte um arquivo CSV para JSON
 function csvToJson(filename) {
     if (!fs.existsSync(filename)) return [];
     const fileContent = fs.readFileSync(filename, 'utf8');
@@ -113,25 +105,25 @@ function csvToJson(filename) {
     });
 }
 
-// Endpoints para acessar os dados processados
 app.get('/dados-json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
     const jsonTesouro = csvToJson(CSV_FILE_TESOURO);
     const jsonSiconfi = csvToJson(CSV_FILE_SICONFI);
     res.json([...jsonTesouro, ...jsonSiconfi]);
 });
 
 app.get('/dados-json-tesouro', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
     res.json(csvToJson(CSV_FILE_TESOURO));
 });
 
 app.get('/dados-json-siconfi', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
     res.json(csvToJson(CSV_FILE_SICONFI));
 });
 
-// Agendamento de tarefa para processar os dados a cada 6 horas
 cron.schedule('0 */6 * * *', processData);
 
-// Endpoints para download dos arquivos CSV
 app.get('/download-csv-tesouro', (req, res) => {
     if (fs.existsSync(CSV_FILE_TESOURO)) {
         return res.download(CSV_FILE_TESOURO);
@@ -148,10 +140,8 @@ app.get('/download-csv-siconfi', (req, res) => {
     }
 });
 
-// Processa os dados assim que o servidor inicia
 processData();
 
-// Inicia o servidor Express
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
