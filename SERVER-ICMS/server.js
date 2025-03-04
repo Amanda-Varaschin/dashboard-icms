@@ -13,12 +13,12 @@ const CSV_FILE_SICONFI = 'dados_siconfi.csv';
 
 app.use(
     cors({
-        origin: ["https://dashboard-icms.vercel.app"],
-        methods: ["GET"],
-        allowedHeaders: ["Content-Type"],
+      origin: ["https://dashboard-icms-6400z9qne-amanda-varaschins-projects.vercel.app"],
+      methods: ["GET"],
+      allowedHeaders: ["Content-Type"],
     })
-);
-
+  );
+  
 const API_TESOURO = 'http://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2023&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=41';
 const API_SICONFI = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo';
 

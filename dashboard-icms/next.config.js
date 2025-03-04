@@ -6,4 +6,14 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = {
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*", 
+        destination: "https://dashboard-icms.onrender.com/:path*"
+      }
+    ];
+  },
+};
+
