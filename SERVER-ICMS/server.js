@@ -11,21 +11,7 @@ const PORT = 3000;
 const CSV_FILE_TESOURO = 'dados_tesouro.csv';
 const CSV_FILE_SICONFI = 'dados_siconfi.csv';
 
-const allowedOrigins = [process.env.ALLOWED_ORIGIN];
-
-
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Acesso bloqueado pelo CORS'));
-        }
-    },
-    credentials: true,
-    methods: 'GET',
-    allowedHeaders: 'Content-Type,Authorization'
-}));
+app.use(cors({ origin: '*' })); // Liberação de acesso a todos
 
   
 const API_TESOURO = 'http://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2023&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=41';
