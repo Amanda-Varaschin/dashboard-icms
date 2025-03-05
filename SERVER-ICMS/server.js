@@ -1,24 +1,27 @@
-import express from 'express';
-import fetch from 'node-fetch';
-import { Parser } from 'json2csv';
-import fs from 'fs';
-import cors from 'cors';
-import cron from 'node-cron';
-import { parse } from 'csv-parse/sync';
+import express from 'express'; // Framework web para Node.js
+import fetch from 'node-fetch'; // Para fazer requisições HTTP
+import { Parser } from 'json2csv'; // Para converter JSON em CSV
+import fs from 'fs'; // Manipulação de arquivos
+import cors from 'cors'; // Para permitir requisições de diferentes origens
+import cron from 'node-cron'; // Agendamento de tarefas
+import { parse } from 'csv-parse/sync'; // Para converter CSV em JSON
 
 const app = express();
 const PORT = 3000;
 const CSV_FILE_TESOURO = 'dados_tesouro.csv';
 const CSV_FILE_SICONFI = 'dados_siconfi.csv';
 
-app.use(cors({ origin: '*' })); // Liberação de acesso a todos
+// Habilita CORS para permitir requisições de qualquer origem
+app.use(cors({ origin: '*' }));
 
-  
+// URLs das APIs de onde pegamos os dados
 const API_TESOURO = 'http://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2023&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=41';
 const API_SICONFI = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo';
 
+// Array para converter os códigos dos meses em nomes legíveis
 const meses = ["Dezembro", "Novembro", "Outubro", "Setembro", "Agosto", "Julho", "Junho", "Maio", "Abril", "Março", "Fevereiro", "Janeiro"];
 
+// Função para converter colunas "MR-XX" para nomes de meses
 function convertColunaToMes(coluna) {
     const match = coluna.match(/MR-(\d+)/);
     if (match) {
@@ -28,6 +31,7 @@ function convertColunaToMes(coluna) {
     return coluna;
 }
 
+// Função para buscar dados da API
 async function fetchData(apiUrl, params = {}) {
     try {
         const url = new URL(apiUrl);
@@ -43,6 +47,7 @@ async function fetchData(apiUrl, params = {}) {
     }
 }
 
+// Função para filtrar os dados relevantes
 function filterData(data) {
     return data.filter(row =>
         row.anexo === 'RREO-Anexo 03' &&
@@ -55,6 +60,7 @@ function filterData(data) {
     }));
 }
 
+// Função principal para buscar, filtrar e salvar os dados
 async function processData() {
     console.log('Buscando dados do Tesouro e SICONFI...');
 
@@ -81,6 +87,7 @@ async function processData() {
     saveToCSV(filteredSiconfi, CSV_FILE_SICONFI);
 }
 
+// Função para salvar os dados filtrados em arquivos CSV
 function saveToCSV(data, filename) {
     if (data.length > 0) {
         const parser = new Parser();
@@ -91,6 +98,7 @@ function saveToCSV(data, filename) {
     }
 }
 
+// Função para converter CSV para JSON
 function csvToJson(filename) {
     if (!fs.existsSync(filename)) return [];
     const fileContent = fs.readFileSync(filename, 'utf8');
@@ -100,6 +108,7 @@ function csvToJson(filename) {
     });
 }
 
+// Rota para retornar os dados em JSON
 app.get('/dados-json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     const jsonTesouro = csvToJson(CSV_FILE_TESOURO);
@@ -107,18 +116,22 @@ app.get('/dados-json', (req, res) => {
     res.json([...jsonTesouro, ...jsonSiconfi]);
 });
 
+// Rota específica para os dados do Tesouro
 app.get('/dados-json-tesouro', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.json(csvToJson(CSV_FILE_TESOURO));
 });
 
+// Rota específica para os dados do SICONFI
 app.get('/dados-json-siconfi', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.json(csvToJson(CSV_FILE_SICONFI));
 });
 
+// Agendamento da atualização dos dados a cada 6 horas
 cron.schedule('0 */6 * * *', processData);
 
+// Rota para download do CSV do Tesouro
 app.get('/download-csv-tesouro', (req, res) => {
     if (fs.existsSync(CSV_FILE_TESOURO)) {
         return res.download(CSV_FILE_TESOURO);
@@ -127,6 +140,7 @@ app.get('/download-csv-tesouro', (req, res) => {
     }
 });
 
+// Rota para download do CSV do SICONFI
 app.get('/download-csv-siconfi', (req, res) => {
     if (fs.existsSync(CSV_FILE_SICONFI)) {
         return res.download(CSV_FILE_SICONFI);
@@ -135,8 +149,10 @@ app.get('/download-csv-siconfi', (req, res) => {
     }
 });
 
+// Executa a primeira coleta dos dados quando o servidor inicia
 processData();
 
+// Inicia o servidor
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });

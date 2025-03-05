@@ -3,11 +3,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Login() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState(''); // Estado para armazenar o nome de usuário
+    const [password, setPassword] = useState(''); // Estado para armazenar a senha
     const router = useRouter();
 
     useEffect(() => {
+        // Se o cookie de autenticação estiver presente, redireciona para o dashboard
         if (document.cookie.includes('auth=true')) {
             router.push('/dashboard');
         }
@@ -16,11 +17,13 @@ export default function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
 
+        // Simulação de login (usuário fixo)
         if (username === 'admin' && password === '1234') {
+            // Define um cookie de autenticação com tempo de expiração
             document.cookie = `auth=true; path=/; max-age=3600; Secure; SameSite=Strict`;
-            router.push('/dashboard');
+            router.push('/dashboard'); // Redireciona para a dashboard após login
         } else {
-            alert('Credenciais inválidas');
+            alert('Credenciais inválidas'); // Exibe alerta caso as credenciais estejam erradas
         }
     };
 
@@ -57,7 +60,6 @@ export default function Login() {
                     color: white;
                 }
 
-
                 .container {
                     display: flex;
                     justify-content: center;
@@ -65,7 +67,6 @@ export default function Login() {
                     height: 100vh;
                     background-color: #0c0c0c;
                     box-shadow: 0px 4px 10px rgb(122, 122, 122);
-
                 }
 
                 .login-box {
