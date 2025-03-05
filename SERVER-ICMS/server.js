@@ -11,9 +11,8 @@ const PORT = 3000;
 const CSV_FILE_TESOURO = 'dados_tesouro.csv';
 const CSV_FILE_SICONFI = 'dados_siconfi.csv';
 
-const allowedOrigins = [
-    'https://dashboard-icms-vykwbittm-amanda-varaschins-projects.vercel.app'
-];
+const allowedOrigins = [process.env.ALLOWED_ORIGIN];
+
 
 app.use(cors({
     origin: function (origin, callback) {
