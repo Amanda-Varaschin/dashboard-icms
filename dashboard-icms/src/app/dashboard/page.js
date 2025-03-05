@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://dashboard-icms.onrender.com';
@@ -61,7 +61,11 @@ export default function Dashboard() {
   const valoresSiconfi = meses.map((m) => dadosSiconfi[m] || 0);
   const valoresGastos = valoresTesouro.map((val, i) => Math.abs(val - valoresSiconfi[i]));
 
-  const data = {
+  const totalTesouro = valoresTesouro.reduce((acc, val) => acc + val, 0);
+  const totalSiconfi = valoresSiconfi.reduce((acc, val) => acc + val, 0);
+  const diferencaTotal = Math.abs(totalTesouro - totalSiconfi);
+
+  const dataBar = {
     labels: meses,
     datasets: [
       {
@@ -82,10 +86,26 @@ export default function Dashboard() {
     ],
   };
 
+  const dataPie = {
+    labels: ['Tesouro', 'Siconfi', 'Diferença'],
+    datasets: [
+      {
+        data: [totalTesouro, totalSiconfi, diferencaTotal],
+        backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)', 'rgba(255, 206, 86, 0.6)'],
+      },
+    ],
+  };
+
   return (
     <div>
       <h1>Dashboard ICMS</h1>
-      {carregando ? <p>Carregando dados...</p> : <Bar data={data} />} 
+      {carregando ? <p>Carregando dados...</p> : (
+        <>
+          <Bar data={dataBar} />
+          <h2>Valor Total Arrecadado</h2>
+          <Pie data={dataPie} />
+        </>
+      )}
     </div>
   );
 }
