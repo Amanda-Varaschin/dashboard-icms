@@ -86,23 +86,13 @@ export default function Dashboard() {
     ],
   };
 
-  const dataPie = {
-    labels: ['Tesouro', 'Siconfi', 'Diferença'],
-    datasets: [
-      {
-        data: [totalTesouro, totalSiconfi, diferencaTotal],
-        backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)', 'rgba(255, 206, 86, 0.6)'],
-      },
-    ],
-  };
-
   return (
     <div style={{ maxWidth: '90%', margin: '0 auto', textAlign: 'center' }}>
-      <h1>Dashboard ICMS</h1>
+      <h1 style={{ margin: '40px 0' }}>Dashboard ICMS</h1>
       {carregando ? <p>Carregando dados...</p> : (
         <>
-          <h2>Valor Total Arrecadado</h2>
-          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '20px' }}>
+          <h2 style={{ marginBottom: '20px' }}>Valor Total Arrecadado</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '40px', marginBottom: '40px' }}>
             <div style={{ width: '300px' }}>
               <Pie data={{ labels: ['Tesouro'], datasets: [{ data: [totalTesouro], backgroundColor: ['rgba(54, 162, 235, 0.6)'] }] }} />
             </div>
@@ -113,7 +103,9 @@ export default function Dashboard() {
               <Pie data={{ labels: ['Diferença'], datasets: [{ data: [diferencaTotal], backgroundColor: ['rgba(255, 206, 86, 0.6)'] }] }} />
             </div>
           </div>
-          <Bar data={dataBar} />
+          <div style={{ marginBottom: '40px' }}>
+            <Bar data={dataBar} />
+          </div>
         </>
       )}
     </div>
