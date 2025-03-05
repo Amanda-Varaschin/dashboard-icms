@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://dashboard-icms.onrender.com';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://dashboard-icms.onrender.com';
 
 export default function Dashboard() {
   const [dadosTesouro, setDadosTesouro] = useState([]);
@@ -13,21 +13,23 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [resTesouro, resSiconfi] = await Promise.all([
-          fetch(`${API_BASE_URL}/dados-json-tesouro`),
-          fetch(`${API_BASE_URL}/dados-json-siconfi`),
-        ]);
+        const resTesouro = await fetch(`${API_BASE_URL}/dados-json-tesouro`);
+        const resSiconfi = await fetch(`${API_BASE_URL}/dados-json-siconfi`);
+
         if (!resTesouro.ok || !resSiconfi.ok) throw new Error('Erro ao buscar dados');
+
         const tesouro = await resTesouro.json();
         const siconfi = await resSiconfi.json();
-        setDadosTesouro(processarDados(Array.isArray(tesouro) ? tesouro : []));
-        setDadosSiconfi(processarDados(Array.isArray(siconfi) ? siconfi : []));
+
+        setDadosTesouro(Array.isArray(tesouro) ? processarDados(tesouro) : {});
+        setDadosSiconfi(Array.isArray(siconfi) ? processarDados(siconfi) : {});
       } catch (error) {
         console.error('Erro ao buscar os dados:', error);
       } finally {
         setCarregando(false);
       }
     };
+
     fetchData();
   }, []);
 
