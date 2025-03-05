@@ -97,13 +97,23 @@ export default function Dashboard() {
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: '90%', margin: '0 auto', textAlign: 'center' }}>
       <h1>Dashboard ICMS</h1>
       {carregando ? <p>Carregando dados...</p> : (
         <>
-          <Bar data={dataBar} />
           <h2>Valor Total Arrecadado</h2>
-          <Pie data={dataPie} />
+          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '20px' }}>
+            <div style={{ width: '300px' }}>
+              <Pie data={{ labels: ['Tesouro'], datasets: [{ data: [totalTesouro], backgroundColor: ['rgba(54, 162, 235, 0.6)'] }] }} />
+            </div>
+            <div style={{ width: '300px' }}>
+              <Pie data={{ labels: ['Siconfi'], datasets: [{ data: [totalSiconfi], backgroundColor: ['rgba(255, 99, 132, 0.6)'] }] }} />
+            </div>
+            <div style={{ width: '300px' }}>
+              <Pie data={{ labels: ['Diferença'], datasets: [{ data: [diferencaTotal], backgroundColor: ['rgba(255, 206, 86, 0.6)'] }] }} />
+            </div>
+          </div>
+          <Bar data={dataBar} />
         </>
       )}
     </div>

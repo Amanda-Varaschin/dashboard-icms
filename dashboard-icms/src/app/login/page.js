@@ -54,22 +54,20 @@ export default function Login() {
                     margin: 0;
                     padding: 0;
                     font-family: Arial, sans-serif;
+                    color: white;
                 }
 
-                body{
-                    background-color: #c0c0c0;
-                }
 
                 .container {
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     height: 100vh;
-                    background-color: #c0c0c0;
+                    background-color: #0c0c0c;
                 }
 
                 .login-box {
-                    background: white;
+                    background: #0c0c0c;
                     padding: 2rem;
                     border-radius: 8px;
                     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
