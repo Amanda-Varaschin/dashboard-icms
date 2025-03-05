@@ -56,12 +56,16 @@ export default function Login() {
                     font-family: Arial, sans-serif;
                 }
 
+                body{
+                    background-color: #c0c0c0;
+                }
+
                 .container {
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     height: 100vh;
-                    background-color: #f4f4f4;
+                    background-color: #c0c0c0;
                 }
 
                 .login-box {
