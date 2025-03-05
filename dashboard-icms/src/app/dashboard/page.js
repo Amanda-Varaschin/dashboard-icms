@@ -73,6 +73,19 @@ export default function Dashboard() {
   const totalSiconfi = valoresSiconfi.reduce((acc, val) => acc + val, 0);
   const diferencaTotal = Math.abs(totalTesouro - totalSiconfi);
 
+  const formatarValor = (valor) => {
+    const numero = Number(valor); // Converte para número
+    if (isNaN(numero)) return "Valor inválido"; // Verifica se é um número válido
+    
+    return new Intl.NumberFormat('pt-BR', { 
+      style: 'currency', 
+      currency: 'BRL' 
+    }).format(numero);
+  }; //formata o valor pra BRL
+
+  const totalTesouroFormatado = formatarValor(totalTesouro);
+  const totalSiconfiFormatado = formatarValor(totalSiconfi);
+  const diferencaTotalFormatado = formatarValor(diferencaTotal);
   // Configuração do gráfico de barras
   const dataBar = {
     labels: meses,
@@ -104,12 +117,15 @@ export default function Dashboard() {
           <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '40px', marginBottom: '40px' }}>
             <div style={{ width: '300px' }}>
               <Pie data={{ labels: ['Tesouro'], datasets: [{ data: [totalTesouro], backgroundColor: ['rgba(54, 162, 235, 0.6)'] }] }} />
+              <h2 style={{fontWeight: '500', margin:'40px 0'}}>{totalTesouroFormatado}</h2>
             </div>
             <div style={{ width: '300px' }}>
               <Pie data={{ labels: ['Siconfi'], datasets: [{ data: [totalSiconfi], backgroundColor: ['rgba(255, 99, 132, 0.6)'] }] }} />
+              <h2 style={{fontWeight: '500', margin:'40px 0'}}>{totalSiconfiFormatado}</h2>
             </div>
             <div style={{ width: '300px' }}>
               <Pie data={{ labels: ['Diferença'], datasets: [{ data: [diferencaTotal], backgroundColor: ['rgba(255, 206, 86, 0.6)'] }] }} />
+              <h2 style={{fontWeight: '500', margin:'40px 0'}}>{diferencaTotalFormatado}</h2>
             </div>
           </div>
           <div style={{ marginBottom: '40px' }}>
