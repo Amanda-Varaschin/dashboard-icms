@@ -64,13 +64,15 @@ export default function Login() {
                     align-items: center;
                     height: 100vh;
                     background-color: #0c0c0c;
+                    box-shadow: 0px 4px 10px rgb(122, 122, 122);
+
                 }
 
                 .login-box {
                     background: #0c0c0c;
                     padding: 2rem;
                     border-radius: 8px;
-                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+                    box-shadow: 0px 4px 10px rgb(122, 122, 122);
                     width: 100%;
                     max-width: 320px;
                     text-align: center;
