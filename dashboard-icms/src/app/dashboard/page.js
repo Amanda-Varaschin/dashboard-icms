@@ -1,123 +1,91 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Bar } from 'react-chartjs-2';
+import 'chart.js/auto';
 
-export default function Login() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const router = useRouter();
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://dashboard-icms.onrender.com';
 
-    useEffect(() => {
-        if (document.cookie.includes('auth=true')) {
-            router.push('/dashboard');
-        }
-    }, [router]);
+export default function Dashboard() {
+  const [dadosTesouro, setDadosTesouro] = useState([]);
+  const [dadosSiconfi, setDadosSiconfi] = useState([]);
+  const [carregando, setCarregando] = useState(true);
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resTesouro = await fetch(`${API_BASE_URL}/dados-json-tesouro`);
+        const resSiconfi = await fetch(`${API_BASE_URL}/dados-json-siconfi`);
 
-        if (username === 'admin' && password === '1234') {
-            document.cookie = `auth=true; path=/; max-age=3600; Secure; SameSite=Strict`;
-            router.push('/dashboard');
-        } else {
-            alert('Credenciais inválidas');
-        }
+        if (!resTesouro.ok || !resSiconfi.ok) throw new Error('Erro ao buscar dados');
+
+        const tesouro = await resTesouro.json();
+        const siconfi = await resSiconfi.json();
+
+        setDadosTesouro(Array.isArray(tesouro) ? processarDados(tesouro) : {});
+        setDadosSiconfi(Array.isArray(siconfi) ? processarDados(siconfi) : {});
+      } catch (error) {
+        console.error('Erro ao buscar os dados:', error);
+      } finally {
+        setCarregando(false);
+      }
     };
 
-    return (
-        <div className="container">
-            <div className="login-box">
-                <h1>Login</h1>
-                <form onSubmit={handleLogin}>
-                    <input
-                        type="text"
-                        placeholder="Usuário"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="Senha"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                    <button type="submit">Entrar</button>
-                </form>
-            </div>
+    fetchData();
+  }, []);
 
-            {/* Estilos CSS */}
-            <style jsx>{`
-                * {
-                    box-sizing: border-box;
-                    margin: 0;
-                    padding: 0;
-                    font-family: Arial, sans-serif;
-                }
+  const convertColunaToMes = (coluna) => ({
+    'MR-11': 'Dezembro',
+    'MR-10': 'Novembro',
+    'MR-09': 'Outubro',
+    'MR-08': 'Setembro',
+    'MR-07': 'Agosto',
+    'MR-06': 'Julho',
+    'MR-05': 'Junho',
+    'MR-04': 'Maio',
+    'MR-03': 'Abril',
+    'MR-02': 'Março',
+    'MR-01': 'Fevereiro',
+  }[coluna] || coluna);
 
-                .container {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100vh;
-                    background-color: #f4f4f4;
-                }
+  const processarDados = (dados) => {
+    return dados.reduce((acc, { coluna, valor }) => {
+      const mes = convertColunaToMes(coluna);
+      acc[mes] = (acc[mes] || 0) + (parseFloat(valor) || 0);
+      return acc;
+    }, {});
+  };
 
-                .login-box {
-                    background: white;
-                    padding: 2rem;
-                    border-radius: 8px;
-                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-                    width: 100%;
-                    max-width: 320px;
-                    text-align: center;
-                }
+  const mesesMR = ['MR-11', 'MR-10', 'MR-09', 'MR-08', 'MR-07', 'MR-06', 'MR-05', 'MR-04', 'MR-03', 'MR-02', 'MR-01'];
+  const meses = mesesMR.map(convertColunaToMes).filter((m) => dadosTesouro[m] || dadosSiconfi[m]);
+  const valoresTesouro = meses.map((m) => dadosTesouro[m] || 0);
+  const valoresSiconfi = meses.map((m) => dadosSiconfi[m] || 0);
+  const valoresGastos = valoresTesouro.map((val, i) => Math.abs(val - valoresSiconfi[i]));
 
-                h1 {
-                    margin-bottom: 1.5rem;
-                    font-size: 1.8rem;
-                }
+  const data = {
+    labels: meses,
+    datasets: [
+      {
+        label: 'Tesouro',
+        data: valoresTesouro,
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+      },
+      {
+        label: 'Siconfi',
+        data: valoresSiconfi,
+        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+      },
+      {
+        label: 'Diferença',
+        data: valoresGastos,
+        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+      },
+    ],
+  };
 
-                form {
-                    display: flex;
-                    flex-direction: column;
-                }
-
-                input {
-                    padding: 10px;
-                    margin-bottom: 10px;
-                    border: 1px solid #ccc;
-                    border-radius: 5px;
-                    font-size: 1rem;
-                }
-
-                button {
-                    background-color: #0070f3;
-                    color: white;
-                    padding: 10px;
-                    border: none;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    font-size: 1rem;
-                    transition: background 0.3s;
-                }
-
-                button:hover {
-                    background-color: #005bb5;
-                }
-
-                @media (max-width: 400px) {
-                    .login-box {
-                        width: 90%;
-                        padding: 1.5rem;
-                    }
-
-                    h1 {
-                        font-size: 1.5rem;
-                    }
-                }
-            `}</style>
-        </div>
-    );
+  return (
+    <div>
+      <h1>Dashboard ICMS</h1>
+      {carregando ? <p>Carregando dados...</p> : <Bar data={data} />} 
+    </div>
+  );
 }
