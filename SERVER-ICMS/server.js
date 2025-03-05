@@ -11,13 +11,9 @@ const PORT = 3000;
 const CSV_FILE_TESOURO = 'dados_tesouro.csv';
 const CSV_FILE_SICONFI = 'dados_siconfi.csv';
 
-app.use(
-    cors({
-      origin: ["*"],
-      methods: ["GET"],
-      allowedHeaders: ["Content-Type"],
-    })
-  );
+const cors = require('cors');
+app.use(cors({ origin: '*' })); // Permite acesso de qualquer origem
+
   
 const API_TESOURO = 'http://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2023&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=41';
 const API_SICONFI = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo';
