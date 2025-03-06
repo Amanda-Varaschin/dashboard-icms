@@ -63,7 +63,7 @@ export default function Dashboard() {
   };
 
   // Define os meses e extrai os valores para os gráficos
-  const mesesMR = ['MR-12', 'MR-11', 'MR-10', 'MR-09', 'MR-08', 'MR-07', 'MR-06', 'MR-05', 'MR-04', 'MR-03', 'MR-02', 'MR-01'];
+  const mesesMR = ['MR-01', 'MR-02', 'MR-03', 'MR-04', 'MR-05', 'MR-06', 'MR-07', 'MR-08', 'MR-09', 'MR-10', 'MR-11', 'MR-12'];
   const meses = mesesMR.map(convertColunaToMes).filter((m) => dadosTesouro[m] || dadosSiconfi[m]);
   const valoresTesouro = meses.map((m) => dadosTesouro[m] || 0);
   const valoresSiconfi = meses.map((m) => dadosSiconfi[m] || 0);
