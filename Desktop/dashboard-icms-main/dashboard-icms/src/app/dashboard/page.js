@@ -110,7 +110,7 @@ export default function Dashboard() {
     ],
   };
 
-  return (
+   return (
     <div style={{ maxWidth: '90%', margin: '0 auto', textAlign: 'center' }}>
       <h1 style={{ margin: '40px 0' }}>Dashboard ICMS</h1>
       {carregando ? <p>Carregando dados...</p> : (
@@ -119,4 +119,22 @@ export default function Dashboard() {
           <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '40px', marginBottom: '40px' }}>
             <div style={{ width: '300px' }}>
               <Pie data={{ labels: ['Tesouro'], datasets: [{ data: [totalTesouro], backgroundColor: ['rgba(54, 162, 235, 0.6)'] }] }} />
-              <h2 styl
+              <h2 style={{fontWeight: '500', margin:'40px 0'}}>{totalTesouroFormatado}</h2>
+            </div>
+            <div style={{ width: '300px' }}>
+              <Pie data={{ labels: ['Siconfi'], datasets: [{ data: [totalSiconfi], backgroundColor: ['rgba(255, 99, 132, 0.6)'] }] }} />
+              <h2 style={{fontWeight: '500', margin:'40px 0'}}>{totalSiconfiFormatado}</h2>
+            </div>
+            <div style={{ width: '300px' }}>
+              <Pie data={{ labels: ['Diferença'], datasets: [{ data: [diferencaTotal], backgroundColor: ['rgba(255, 206, 86, 0.6)'] }] }} />
+              <h2 style={{fontWeight: '500', margin:'40px 0'}}>{diferencaTotalFormatado}</h2>
+            </div>
+          </div>
+          <div style={{ marginBottom: '40px' }}>
+            <Bar data={dataBar} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
