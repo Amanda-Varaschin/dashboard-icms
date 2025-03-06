@@ -18,12 +18,15 @@ const API_TESOURO = 'http://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_e
 const meses = ["Dezembro", "Novembro", "Outubro", "Setembro", "Agosto", "Julho", "Junho", "Maio", "Abril", "Março", "Fevereiro", "Janeiro"];
 
 function convertColunaToMes(coluna) {
-    const match = coluna.match(/MR-(\d+)/);
+    if (coluna === "<MR>") return "Dezembro"; // "MR" representa o mês mais recente (Dezembro)
+    
+    const match = coluna.match(/^<MR-(\d+)>$/);
     if (match) {
         const index = parseInt(match[1], 10);
-        return meses[index] || coluna;
+        if (index >= 0 && index <= 11) return meses[index]; // Ajuste para mapear corretamente os meses
     }
-    return coluna;
+    
+    return coluna; // Retorna o nome original caso não reconheça o padrão
 }
 
 async function fetchData(apiUrl) {
