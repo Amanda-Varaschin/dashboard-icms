@@ -15,18 +15,16 @@ app.use(cors({ origin: '*' }));
 
 const API_TESOURO = 'http://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2023&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=41';
 
-const meses = ["Dezembro", "Novembro", "Outubro", "Setembro", "Agosto", "Julho", "Junho", "Maio", "Abril", "Março", "Fevereiro", "Janeiro"];
+const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 function convertColunaToMes(coluna) {
-    if (coluna === "<MR>") return "Dezembro"; // "MR" representa o mês mais recente (Dezembro)
-    
-    const match = coluna.match(/^<MR-(\d+)>$/);
+    if (coluna === "<MR>") return meses[11]; // Último mês (Dezembro)
+    const match = coluna.match(/<MR-(\d+)>/);
     if (match) {
-        const index = parseInt(match[1], 10);
-        if (index >= 0 && index <= 11) return meses[index]; // Ajuste para mapear corretamente os meses
+        const index = 11 - parseInt(match[1], 10);
+        return meses[index] || coluna;
     }
-    
-    return coluna; // Retorna o nome original caso não reconheça o padrão
+    return coluna;
 }
 
 async function fetchData(apiUrl) {
