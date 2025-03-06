@@ -52,14 +52,12 @@ export default function Dashboard() {
     'MR-01': 'Fevereiro',
   }[coluna] || coluna);
 
-  // Função para arredondar os valores
-  const arredondarValor = (valor) => Math.round(valor * 100) / 100;
 
   // Processa os dados para somar os valores de cada mês e arredondá-los
   const processarDados = (dados) => {
     return dados.reduce((acc, { coluna, valor }) => {
       const mes = convertColunaToMes(coluna);
-      acc[mes] = arredondarValor((acc[mes] || 0) + (parseFloat(valor) || 0));
+      acc[mes] = arredondarValor((acc[mes] || 0) + (parseInt(valor) || 0));
       return acc;
     }, {});
   };
