@@ -21,20 +21,19 @@ const API_SICONFI = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo';
 // Array para converter os códigos dos meses em nomes legíveis
 const meses = ["Dezembro", "Novembro", "Outubro", "Setembro", "Agosto", "Julho", "Junho", "Maio", "Abril", "Março", "Fevereiro", "Janeiro"];
 
-// Função para converter colunas "MR-XX" para nomes de meses
-function convertColunaToMes(coluna) {
-    if (coluna === "MR") return "Dezembro"; // "MR" representa dezembro
 
-    const match = coluna.match(/MR-(\d+)/);
+function convertColunaToMes(coluna) {
+    if (coluna === "<MR>") return "Dezembro"; // Caso específico para "MR" ser Dezembro
+    
+    const match = coluna.match(/^<MR-(\d+)>$/);
     if (match) {
-        const index = parseInt(match[1], 10); // Extrai o número após "MR-"
-        if (index >= 1 && index <= 11) {
-            return meses[12 - (index + 1)]; // Converte corretamente o índice para o mês
-        }
+        const index = parseInt(match[1], 10);
+        if (index >= 1 && index <= 11) return meses[12 - (index + 1)]; // Ajuste para mapear corretamente os meses
     }
     
-    return coluna; // Retorna o nome original se não for um formato válido
+    return coluna; // Retorna o nome original caso não reconheça o padrão
 }
+
 
 
 
