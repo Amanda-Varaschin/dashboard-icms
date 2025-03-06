@@ -17,7 +17,7 @@ export default function Dashboard() {
       try {
         // Faz as requisições para buscar os dados
         const resTesouro = await fetch(`${API_BASE_URL}/dados-json-tesouro`);
-        const resSiconfi = await fetch(`${API_BASE_URL}/dados-json-siconfi`);
+        const resSiconfi = await fetch('https://dashboard-icms.onrender.com/dados-json-siconfi'); // Atualização do endpoint do Siconfi
 
         if (!resTesouro.ok || !resSiconfi.ok) throw new Error('Erro ao buscar dados');
 
@@ -86,7 +86,7 @@ export default function Dashboard() {
   const totalTesouroFormatado = formatarValor(totalTesouro);
   const totalSiconfiFormatado = formatarValor(totalSiconfi);
   const diferencaTotalFormatado = formatarValor(diferencaTotal);
-
+  
   // Configuração do gráfico de barras
   const dataBar = {
     labels: meses,
