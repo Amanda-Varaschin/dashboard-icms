@@ -15,7 +15,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Atualizado para pegar os dados da nova URL
+        // Faz as requisições para buscar os dados
         const resTesouro = await fetch(`${API_BASE_URL}/dados-json-tesouro`);
         const resSiconfi = await fetch(`${API_BASE_URL}/dados-json-siconfi`);
 
