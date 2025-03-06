@@ -17,7 +17,7 @@ export default function Dashboard() {
       try {
         // Faz as requisições para buscar os dados
         const resTesouro = await fetch(`${API_BASE_URL}/dados-json-tesouro`);
-        const resSiconfi = await fetch('https://dashboard-icms.onrender.com/dados-json-siconfi'); // Atualização do endpoint do Siconfi
+        const resSiconfi = await fetch(`${API_BASE_URL}/dados-json-siconfi`);
 
         if (!resTesouro.ok || !resSiconfi.ok) throw new Error('Erro ao buscar dados');
 
@@ -38,35 +38,32 @@ export default function Dashboard() {
   }, []);
 
   // Converte os identificadores de colunas em nomes de meses
-  const convertColunaToMes = (coluna) => {
-    const meses = {
-      'MR-11': 'Janeiro',
-      'MR-10': 'Fevereiro',
-      'MR-09': 'Março',
-      'MR-08': 'Abril',
-      'MR-07': 'Maio',
-      'MR-06': 'Junho',
-      'MR-05': 'Julho',
-      'MR-04': 'Agosto',
-      'MR-03': 'Setembro',
-      'MR-02': 'Outubro',
-      'MR-01': 'Novembro',
-      'MR': 'Dezembro',
-    };
-    return meses[coluna] || coluna;
-  };
+  const convertColunaToMes = (coluna) => ({
+    'MR-12': 'Dezembro',
+    'MR-11': 'Novembro',
+    'MR-10': 'Outubro',
+    'MR-09': 'Setembro',
+    'MR-08': 'Agosto',
+    'MR-07': 'Julho',
+    'MR-06': 'Junho',
+    'MR-05': 'Maio',
+    'MR-04': 'Abril',
+    'MR-03': 'Março',
+    'MR-02': 'Fevereiro',
+    'MR-01': 'Janeiro', // Adicionando Janeiro para garantir que todos os meses estão presentes
+  }[coluna] || coluna);
 
   // Processa os dados para somar os valores de cada mês
   const processarDados = (dados) => {
     return dados.reduce((acc, { coluna, valor }) => {
       const mes = convertColunaToMes(coluna);
-      acc[mes] = (acc[mes] || 0) + (Math.ceil(valor) || 0);
+      acc[mes] = (acc[mes] || 0) + (parseFloat(valor) || 0);
       return acc;
     }, {});
   };
 
   // Define os meses e extrai os valores para os gráficos
-  const mesesMR = ['MR-01', 'MR-02', 'MR-03', 'MR-04', 'MR-05', 'MR-06', 'MR-07', 'MR-08', 'MR-09', 'MR-10', 'MR-11', 'MR-12'];
+  const mesesMR = ['MR-12', 'MR-11', 'MR-10', 'MR-09', 'MR-08', 'MR-07', 'MR-06', 'MR-05', 'MR-04', 'MR-03', 'MR-02', 'MR-01'];
   const meses = mesesMR.map(convertColunaToMes).filter((m) => dadosTesouro[m] || dadosSiconfi[m]);
   const valoresTesouro = meses.map((m) => dadosTesouro[m] || 0);
   const valoresSiconfi = meses.map((m) => dadosSiconfi[m] || 0);
