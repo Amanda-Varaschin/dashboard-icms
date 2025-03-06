@@ -53,11 +53,11 @@ export default function Dashboard() {
     'MR-01': 'Janeiro', // Adicionando Janeiro para garantir que todos os meses estão presentes
   }[coluna] || coluna);
 
-  // Processa os dados para somar os valores de cada mês e arredondar os valores para inteiros
+  // Processa os dados para somar os valores de cada mês
   const processarDados = (dados) => {
     return dados.reduce((acc, { coluna, valor }) => {
       const mes = convertColunaToMes(coluna);
-      acc[mes] = Math.floor((acc[mes] || 0) + (parseFloat(valor) || 0)); // Arredonda para inteiro
+      acc[mes] = (acc[mes] || 0) + (parseFloat(valor) || 0);
       return acc;
     }, {});
   };
