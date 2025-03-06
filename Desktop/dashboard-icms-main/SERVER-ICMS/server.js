@@ -43,22 +43,31 @@ async function fetchData(apiUrl) {
     }
 }
 
+// Função para filtrar os dados relevantes e arredondar os valores numéricos
 function filterData(data) {
-    console.log("Filtrando dados...");
     return data.filter(row =>
         row.anexo === 'RREO-Anexo 03' &&
         row.conta === 'ICMS' &&
         row.coluna !== 'PREVISÃO ATUALIZADA 2023' &&
         row.coluna !== 'TOTAL (ÚLTIMOS 12 MESES)'
     ).map(row => {
-        console.log("Processando linha:", row);
+        // Arredonda os valores numéricos
+        const arredondarValores = (value) => {
+            if (typeof value === 'number') {
+                return Math.round(value);
+            }
+            return value;
+        };
+
         return {
             ...row,
             coluna: convertColunaToMes(row.coluna),
-            valor: typeof row.valor === 'string' ? parseFloat(row.valor.replace(/\./g, '').replace(',', '.')) || 0 : row.valor
+            // Aqui, você pode adicionar mais colunas a serem arredondadas se necessário
+            valor: arredondarValores(row.valor), // Exemplo de arredondamento da coluna 'valor'
         };
     });
 }
+
 
 async function updateTesouroData() {
     console.log('Atualizando dados do Tesouro...');
