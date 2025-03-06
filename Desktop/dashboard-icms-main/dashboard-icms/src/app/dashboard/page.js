@@ -50,7 +50,7 @@ export default function Dashboard() {
     'MR-03': 'Abril',
     'MR-02': 'Março',
     'MR-01': 'Fevereiro',
-    'MR':'Janeiro',
+    '<MR>':'Janeiro',
   }[coluna] || coluna);
 
   // Processa os dados para somar os valores de cada mês
