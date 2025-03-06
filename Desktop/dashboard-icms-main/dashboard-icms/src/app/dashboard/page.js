@@ -52,15 +52,15 @@ export default function Dashboard() {
     'MR-01': 'Fevereiro',
   }[coluna] || coluna);
 
-
-  // Processa os dados para somar os valores de cada mês e arredondá-los
+//Processa os dados
   const processarDados = (dados) => {
     return dados.reduce((acc, { coluna, valor }) => {
       const mes = convertColunaToMes(coluna);
-      acc[mes] = arredondarValor((acc[mes] || 0) + (parseInt(valor) || 0));
+      acc[mes] = (acc[mes] || 0) + (parseInt(valor) || 0);
       return acc;
     }, {});
   };
+
 
   // Define os meses e extrai os valores para os gráficos
   const mesesMR = ['MR-11', 'MR-10', 'MR-09', 'MR-08', 'MR-07', 'MR-06', 'MR-05', 'MR-04', 'MR-03', 'MR-02', 'MR-01'];
