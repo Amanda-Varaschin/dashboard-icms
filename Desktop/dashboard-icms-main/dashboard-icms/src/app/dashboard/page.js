@@ -38,19 +38,23 @@ export default function Dashboard() {
   }, []);
 
   // Converte os identificadores de colunas em nomes de meses
-  const convertColunaToMes = (coluna) => ({
-    'MR-11': 'Dezembro',
-    'MR-10': 'Novembro',
-    'MR-09': 'Outubro',
-    'MR-08': 'Setembro',
-    'MR-07': 'Agosto',
-    'MR-06': 'Julho',
-    'MR-05': 'Junho',
-    'MR-04': 'Maio',
-    'MR-03': 'Abril',
-    'MR-02': 'Março',
-    'MR-01': 'Fevereiro',
-  }[coluna] || coluna);
+  const convertColunaToMes = (coluna) => {
+    const meses = {
+      'MR-11': 'Janeiro',
+      'MR-10': 'Fevereiro',
+      'MR-09': 'Março',
+      'MR-08': 'Abril',
+      'MR-07': 'Maio',
+      'MR-06': 'Junho',
+      'MR-05': 'Julho',
+      'MR-04': 'Agosto',
+      'MR-03': 'Setembro',
+      'MR-02': 'Outubro',
+      'MR-01': 'Novembro',
+      'MR': 'Dezembro',
+    };
+    return meses[coluna] || coluna;
+  };
 
   // Processa os dados para somar os valores de cada mês
   const processarDados = (dados) => {
@@ -62,7 +66,7 @@ export default function Dashboard() {
   };
 
   // Define os meses e extrai os valores para os gráficos
-  const mesesMR = ['MR-11', 'MR-10', 'MR-09', 'MR-08', 'MR-07', 'MR-06', 'MR-05', 'MR-04', 'MR-03', 'MR-02', 'MR-01'];
+  const mesesMR = ['MR-01', 'MR-02', 'MR-03', 'MR-04', 'MR-05', 'MR-06', 'MR-07', 'MR-08', 'MR-09', 'MR-10', 'MR-11', 'MR-12'];
   const meses = mesesMR.map(convertColunaToMes).filter((m) => dadosTesouro[m] || dadosSiconfi[m]);
   const valoresTesouro = meses.map((m) => dadosTesouro[m] || 0);
   const valoresSiconfi = meses.map((m) => dadosSiconfi[m] || 0);
