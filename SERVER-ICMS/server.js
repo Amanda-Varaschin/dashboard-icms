@@ -22,14 +22,19 @@ const API_SICONFI = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo';
 const meses = ["Dezembro", "Novembro", "Outubro", "Setembro", "Agosto", "Julho", "Junho", "Maio", "Abril", "Março", "Fevereiro", "Janeiro"];
 
 // Função para converter colunas "MR-XX" para nomes de meses
+// Função para converter colunas "MR-XX" para nomes de meses
 function convertColunaToMes(coluna) {
+    if (coluna === "MR") return "Dezembro"; // Correção para reconhecer "MR" como dezembro
+    
     const match = coluna.match(/MR-(\d+)/);
     if (match) {
         const index = parseInt(match[1], 10);
-        return meses[index] || coluna;
+        if (index >= 1 && index <= 12) return meses[12 - index]; // Ajuste para obter o mês correto
     }
-    return coluna;
+    
+    return coluna; // Retorna o nome original se não for uma coluna reconhecida
 }
+
 
 // Função para buscar dados da API
 async function fetchData(apiUrl, params = {}) {
