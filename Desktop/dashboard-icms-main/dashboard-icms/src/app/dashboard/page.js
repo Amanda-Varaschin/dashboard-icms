@@ -109,8 +109,7 @@ export default function Dashboard() {
       },
     ],
   };
-
-   return (
+  return (
     <div style={{ maxWidth: '90%', margin: '0 auto', textAlign: 'center' }}>
       <h1 style={{ margin: '40px 0' }}>Dashboard ICMS</h1>
       {carregando ? <p>Carregando dados...</p> : (
