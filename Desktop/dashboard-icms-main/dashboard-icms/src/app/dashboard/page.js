@@ -15,7 +15,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Faz as requisições para buscar os dados
+        // Atualizado para pegar os dados da nova URL
         const resTesouro = await fetch(`${API_BASE_URL}/dados-json-tesouro`);
         const resSiconfi = await fetch(`${API_BASE_URL}/dados-json-siconfi`);
 
@@ -86,6 +86,7 @@ export default function Dashboard() {
   const totalTesouroFormatado = formatarValor(totalTesouro);
   const totalSiconfiFormatado = formatarValor(totalSiconfi);
   const diferencaTotalFormatado = formatarValor(diferencaTotal);
+
   // Configuração do gráfico de barras
   const dataBar = {
     labels: meses,
