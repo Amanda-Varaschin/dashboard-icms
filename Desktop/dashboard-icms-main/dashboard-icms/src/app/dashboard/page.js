@@ -56,7 +56,7 @@ export default function Dashboard() {
   const processarDados = (dados) => {
     return dados.reduce((acc, { coluna, valor }) => {
       const mes = convertColunaToMes(coluna);
-      acc[mes] = (acc[mes] || 0) + (parseFloat(valor) || 0);
+      acc[mes] = (acc[mes] || 0) + (Math.ceil(valor) || 0);
       return acc;
     }, {});
   };
