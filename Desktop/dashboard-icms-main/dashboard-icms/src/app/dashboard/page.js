@@ -39,40 +39,42 @@ export default function Dashboard() {
 
   // Converte os identificadores de colunas em nomes de meses
   const convertColunaToMes = (coluna) => ({
-    'MR-12': 'Dezembro',
-    'MR-11': 'Novembro',
-    'MR-10': 'Outubro',
-    'MR-09': 'Setembro',
-    'MR-08': 'Agosto',
-    'MR-07': 'Julho',
-    'MR-06': 'Junho',
-    'MR-05': 'Maio',
-    'MR-04': 'Abril',
-    'MR-03': 'Março',
-    'MR-02': 'Fevereiro',
-    'MR-01': 'Janeiro', // Adicionando Janeiro para garantir que todos os meses estão presentes
+    'MR-11': 'Dezembro',
+    'MR-10': 'Novembro',
+    'MR-09': 'Outubro',
+    'MR-08': 'Setembro',
+    'MR-07': 'Agosto',
+    'MR-06': 'Julho',
+    'MR-05': 'Junho',
+    'MR-04': 'Maio',
+    'MR-03': 'Abril',
+    'MR-02': 'Março',
+    'MR-01': 'Fevereiro',
   }[coluna] || coluna);
 
-  // Processa os dados para somar os valores de cada mês
+  // Função para arredondar os valores
+  const arredondarValor = (valor) => Math.round(valor * 100) / 100;
+
+  // Processa os dados para somar os valores de cada mês e arredondá-los
   const processarDados = (dados) => {
     return dados.reduce((acc, { coluna, valor }) => {
       const mes = convertColunaToMes(coluna);
-      acc[mes] = (acc[mes] || 0) + (parseFloat(valor) || 0);
+      acc[mes] = arredondarValor((acc[mes] || 0) + (parseFloat(valor) || 0));
       return acc;
     }, {});
   };
 
   // Define os meses e extrai os valores para os gráficos
-  const mesesMR = ['MR-12', 'MR-11', 'MR-10', 'MR-09', 'MR-08', 'MR-07', 'MR-06', 'MR-05', 'MR-04', 'MR-03', 'MR-02', 'MR-01'];
+  const mesesMR = ['MR-11', 'MR-10', 'MR-09', 'MR-08', 'MR-07', 'MR-06', 'MR-05', 'MR-04', 'MR-03', 'MR-02', 'MR-01'];
   const meses = mesesMR.map(convertColunaToMes).filter((m) => dadosTesouro[m] || dadosSiconfi[m]);
-  const valoresTesouro = meses.map((m) => dadosTesouro[m] || 0);
-  const valoresSiconfi = meses.map((m) => dadosSiconfi[m] || 0);
-  const valoresGastos = valoresTesouro.map((val, i) => Math.abs(val - valoresSiconfi[i]));
+  const valoresTesouro = meses.map((m) => arredondarValor(dadosTesouro[m] || 0));
+  const valoresSiconfi = meses.map((m) => arredondarValor(dadosSiconfi[m] || 0));
+  const valoresGastos = valoresTesouro.map((val, i) => arredondarValor(Math.abs(val - valoresSiconfi[i])));
 
   // Calcula totais para exibir no dashboard
-  const totalTesouro = valoresTesouro.reduce((acc, val) => acc + val, 0);
-  const totalSiconfi = valoresSiconfi.reduce((acc, val) => acc + val, 0);
-  const diferencaTotal = Math.abs(totalTesouro - totalSiconfi);
+  const totalTesouro = arredondarValor(valoresTesouro.reduce((acc, val) => acc + val, 0));
+  const totalSiconfi = arredondarValor(valoresSiconfi.reduce((acc, val) => acc + val, 0));
+  const diferencaTotal = arredondarValor(Math.abs(totalTesouro - totalSiconfi));
 
   const formatarValor = (valor) => {
     const numero = Number(valor); // Converte para número
@@ -87,7 +89,7 @@ export default function Dashboard() {
   const totalTesouroFormatado = formatarValor(totalTesouro);
   const totalSiconfiFormatado = formatarValor(totalSiconfi);
   const diferencaTotalFormatado = formatarValor(diferencaTotal);
-  
+
   // Configuração do gráfico de barras
   const dataBar = {
     labels: meses,
@@ -119,22 +121,4 @@ export default function Dashboard() {
           <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '40px', marginBottom: '40px' }}>
             <div style={{ width: '300px' }}>
               <Pie data={{ labels: ['Tesouro'], datasets: [{ data: [totalTesouro], backgroundColor: ['rgba(54, 162, 235, 0.6)'] }] }} />
-              <h2 style={{fontWeight: '500', margin:'40px 0'}}>{totalTesouroFormatado}</h2>
-            </div>
-            <div style={{ width: '300px' }}>
-              <Pie data={{ labels: ['Siconfi'], datasets: [{ data: [totalSiconfi], backgroundColor: ['rgba(255, 99, 132, 0.6)'] }] }} />
-              <h2 style={{fontWeight: '500', margin:'40px 0'}}>{totalSiconfiFormatado}</h2>
-            </div>
-            <div style={{ width: '300px' }}>
-              <Pie data={{ labels: ['Diferença'], datasets: [{ data: [diferencaTotal], backgroundColor: ['rgba(255, 206, 86, 0.6)'] }] }} />
-              <h2 style={{fontWeight: '500', margin:'40px 0'}}>{diferencaTotalFormatado}</h2>
-            </div>
-          </div>
-          <div style={{ marginBottom: '40px' }}>
-            <Bar data={dataBar} />
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
+              <h2 styl
