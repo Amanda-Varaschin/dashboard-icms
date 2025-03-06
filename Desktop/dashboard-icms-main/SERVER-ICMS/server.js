@@ -15,23 +15,27 @@ app.use(cors({ origin: '*' }));
 
 const API_TESOURO = 'http://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2023&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=41';
 
-const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+const meses = ["Dezembro", "Novembro", "Outubro", "Setembro", "Agosto", "Julho", "Junho", "Maio", "Abril", "Março", "Fevereiro", "Janeiro"];
 
 function convertColunaToMes(coluna) {
-    if (coluna === "<MR>") return meses[11]; // Último mês (Dezembro)
-    const match = coluna.match(/<MR-(\d+)>/);
+    console.log("Convertendo coluna:", coluna);
+    const match = coluna.match(/MR-(\d+)/);
     if (match) {
-        const index = 11 - parseInt(match[1], 10);
+        const index = parseInt(match[1], 10);
         return meses[index] || coluna;
+    } else if (coluna === '<MR>') {
+        return meses[0];
     }
     return coluna;
 }
 
 async function fetchData(apiUrl) {
     try {
+        console.log("Buscando dados da API:", apiUrl);
         const res = await fetch(apiUrl);
         if (!res.ok) throw new Error(`Erro ao buscar dados: ${res.status} - ${res.statusText}`);
         const json = await res.json();
+        console.log("Dados recebidos:", json.items.length);
         return json.items || [];
     } catch (error) {
         console.error('Erro ao buscar os dados:', error);
@@ -40,15 +44,20 @@ async function fetchData(apiUrl) {
 }
 
 function filterData(data) {
+    console.log("Filtrando dados...");
     return data.filter(row =>
         row.anexo === 'RREO-Anexo 03' &&
         row.conta === 'ICMS' &&
         row.coluna !== 'PREVISÃO ATUALIZADA 2023' &&
         row.coluna !== 'TOTAL (ÚLTIMOS 12 MESES)'
-    ).map(row => ({
-        ...row,
-        coluna: convertColunaToMes(row.coluna)
-    }));
+    ).map(row => {
+        console.log("Processando linha:", row);
+        return {
+            ...row,
+            coluna: convertColunaToMes(row.coluna),
+            valor: typeof row.valor === 'string' ? parseFloat(row.valor.replace(/\./g, '').replace(',', '.')) || 0 : row.valor
+        };
+    });
 }
 
 async function updateTesouroData() {
@@ -61,6 +70,7 @@ async function updateTesouroData() {
 }
 
 function saveToCSV(data, filename) {
+    console.log("Salvando dados no CSV:", filename);
     if (data.length > 0) {
         const parser = new Parser();
         fs.writeFileSync(filename, parser.parse(data));
@@ -76,10 +86,17 @@ function csvToJson(filename) {
     return parse(fileContent, {
         columns: true,
         skip_empty_lines: true
+    }).map(row => {
+        console.log("Convertendo linha do CSV para JSON:", row);
+        return {
+            ...row,
+            valor: typeof row.valor === 'string' ? parseFloat(row.valor.replace(/\./g, '').replace(',', '.')) || 0 : row.valor
+        };
     });
 }
 
 app.get('/dados-json', (req, res) => {
+    console.log("Endpoint /dados-json acessado");
     res.setHeader('Content-Type', 'application/json');
     const jsonTesouro = csvToJson(CSV_FILE_TESOURO);
     const jsonSiconfi = csvToJson(CSV_FILE_SICONFI);
@@ -87,11 +104,13 @@ app.get('/dados-json', (req, res) => {
 });
 
 app.get('/dados-json-tesouro', (req, res) => {
+    console.log("Endpoint /dados-json-tesouro acessado");
     res.setHeader('Content-Type', 'application/json');
     res.json(csvToJson(CSV_FILE_TESOURO));
 });
 
 app.get('/dados-json-siconfi', (req, res) => {
+    console.log("Endpoint /dados-json-siconfi acessado");
     res.setHeader('Content-Type', 'application/json');
     res.json(csvToJson(CSV_FILE_SICONFI));
 });
@@ -99,6 +118,7 @@ app.get('/dados-json-siconfi', (req, res) => {
 cron.schedule('0 */6 * * *', updateTesouroData);
 
 app.get('/download-csv-tesouro', (req, res) => {
+    console.log("Download do CSV Tesouro solicitado");
     if (fs.existsSync(CSV_FILE_TESOURO)) {
         return res.download(CSV_FILE_TESOURO);
     } else {
@@ -107,6 +127,7 @@ app.get('/download-csv-tesouro', (req, res) => {
 });
 
 app.get('/download-csv-siconfi', (req, res) => {
+    console.log("Download do CSV SICONFI solicitado");
     if (fs.existsSync(CSV_FILE_SICONFI)) {
         return res.download(CSV_FILE_SICONFI);
     } else {
